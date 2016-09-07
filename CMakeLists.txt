@@ -7,7 +7,12 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(Readline)
 
 add_executable(steamutils
-	main.cpp
+	src/main.cpp
+
+	src/Common.cpp
+	src/Callbacks.cpp
+
+	src/Apis/Lobby.cpp
 )
 
 target_link_libraries(steamutils
