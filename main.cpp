@@ -55,11 +55,11 @@ public:
 
 		m_arrLobbyList.Clear();
 
-		printf("%d lobbies:\n", num);
+		printf("%d lobb%s:\n", num, num != 1 ? "ies" : "y");
 		for (int i = 0; i < num; i++) {
 			CSteamID id = SteamMatchmaking()->GetLobbyByIndex(i);
 			int numMembers = SteamMatchmaking()->GetNumLobbyMembers(id);
-			printf("  %d - %llu - %d members\n", i, id.ConvertToUint64(), numMembers);
+			printf("  " TERMCOL_BOLDGREEN "%d" TERMCOL_RESET ": " TERMCOL_BOLDWHITE "%llu" TERMCOL_RESET " (%d member%s)\n", i, id.ConvertToUint64(), numMembers, numMembers != 1 ? "s" : "");
 
 			m_arrLobbyList.Push() = id;
 		}
@@ -130,29 +130,31 @@ int main(int argc, char* args[]) {
 				}
 
 				int index = atoi(parse[2]);
-				if (index < 0 || index >= callbacks.m_arrLobbyList.Count()) {
-					printf("Index %d is out of range. There are %d listed lobbies.\n", index, callbacks.m_arrLobbyList.Count());
+				int numLobbies = callbacks.m_arrLobbyList.Count();
+				if (index < 0 || index >= numLobbies) {
+					printf("Index %d is out of range. We have %d listed lobb%s.\n", index, numLobbies, numLobbies != 1 ? "ies" : "y");
 					continue;
 				}
 
 				CSteamID &id = callbacks.m_arrLobbyList[index];
 				int numKeys = SteamMatchmaking()->GetLobbyDataCount(id);
-				printf("Lobby %llu has %d metadata keys.\n", id.ConvertToUint64(), numKeys);
+				printf("Lobby %llu has %d metadata key%s.\n", id.ConvertToUint64(), numKeys, numKeys != 1 ? "s" : "");
 
 				if (parse.Count() >= 4) {
 					const char* key = parse[3];
 					const char* value = SteamMatchmaking()->GetLobbyData(id, key);
-					printf("  '%s' = '%s'\n", key, value);
+					printf("  " TERMCOL_BOLDGREEN "%s" TERMCOL_RESET ": '" TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "'\n", key, value);
 				} else {
 					for (int i = 0; i < numKeys; i++) {
 						char key[128];
 						char value[128];
 						SteamMatchmaking()->GetLobbyDataByIndex(id, i, key, 128, value, 128);
-						printf("  '%s' = '%s'\n", key, value);
+						printf("  " TERMCOL_BOLDGREEN "%s" TERMCOL_RESET ": '" TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "'\n", key, value);
 					}
 				}
 			}
 		}
 	}
+	printf("\n");
 	return 0;
 }
