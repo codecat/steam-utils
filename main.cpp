@@ -90,7 +90,7 @@ int main(int argc, char* args[]) {
 		if (line != nullptr) {
 			free(line);
 		}
-		line = readline("> ");
+		line = readline(TERMCOL_BOLDRED "> " TERMCOL_RESET);
 		if (line == nullptr) {
 			break;
 		}
