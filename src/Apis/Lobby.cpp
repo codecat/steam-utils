@@ -51,24 +51,26 @@ public:
 		m_inLobby = pCallback->m_ulSteamIDLobby;
 		printf("Lobby created: %llu\n", pCallback->m_ulSteamIDLobby);
 	}
+
+	CCallResult<LobbyCallbacks, LobbyEnter_t> m_CallResultLobbyEnter;
+	void OnLobbyEnter(LobbyEnter_t* pCallback, bool bIOFailure)
+	{
+		Done();
+
+		if (pCallback->m_EChatRoomEnterResponse > k_EChatRoomEnterResponseSuccess) {
+			printf("Failed to join lobby. Room enter response %d.\n", pCallback->m_EChatRoomEnterResponse);
+			return;
+		}
+
+		m_inLobbyHost = false;
+		m_inLobby = pCallback->m_ulSteamIDLobby;
+		printf("Lobby joined:\n");
+		printf("  " TERMCOL_BOLDGREEN "Chat permissions" TERMCOL_RESET ": " TERMCOL_BOLDWHITE "%u" TERMCOL_RESET "\n", pCallback->m_rgfChatPermissions);
+		printf("  " TERMCOL_BOLDGREEN "Locked" TERMCOL_RESET ": " TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "\n", pCallback->m_bLocked ? "true" : "false");
+	}
 };
 
 static LobbyCallbacks g_callbacks;
-
-bool InLobby()
-{
-	return g_callbacks.m_inLobby.IsValid();
-}
-
-bool InLobbyHost()
-{
-	return g_callbacks.m_inLobby.IsValid() && g_callbacks.m_inLobbyHost;
-}
-
-uint64_t InLobbyID()
-{
-	return g_callbacks.m_inLobby.ConvertToUint64();
-}
 
 static void Help()
 {
@@ -174,6 +176,20 @@ static void Leave()
 	g_callbacks.m_inLobby.Clear();
 
 	printf("Lobby left.\n");
+}
+
+void LobbyPrompt(s::String &prompt)
+{
+	if (!g_callbacks.m_inLobby.IsValid()) {
+		return;
+	}
+
+	if (g_callbacks.m_inLobbyHost) {
+		prompt += TERMCOL_BOLDYELLOW;
+	} else {
+		prompt += TERMCOL_BOLDGREEN;
+	}
+	prompt += s::strPrintF("(lobby:%llu) " TERMCOL_RESET, g_callbacks.m_inLobby.ConvertToUint64());
 }
 
 void LobbyCommands(Params &params)

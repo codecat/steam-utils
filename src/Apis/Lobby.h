@@ -2,8 +2,5 @@
 
 #include "../Common.h"
 
-bool InLobby();
-bool InLobbyHost();
-uint64_t InLobbyID();
-
+void LobbyPrompt(s::String &prompt);
 void LobbyCommands(Params &params);

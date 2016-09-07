@@ -27,13 +27,7 @@ int main(int argc, char* args[])
 		}
 
 		s::String prompt;
-		if (InLobby()) {
-			if (InLobbyHost()) {
-				prompt += s::strPrintF(TERMCOL_BOLDYELLOW "(lobby:%llu) " TERMCOL_RESET, InLobbyID());
-			} else {
-				prompt += s::strPrintF(TERMCOL_BOLDGREEN "(lobby:%llu) " TERMCOL_RESET, InLobbyID());
-			}
-		}
+		LobbyPrompt(prompt);
 		prompt += TERMCOL_BOLDRED "> " TERMCOL_RESET;
 		line = readline(prompt);
 
