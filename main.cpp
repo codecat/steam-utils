@@ -112,10 +112,16 @@ int main(int argc, char* args[]) {
 		} else if (parse[0] == "lobby") {
 			if (parse.Count() == 1) {
 				printf("Available commands for lobby:\n");
-				printf("  list\n");
+				printf("  list [limit]\n");
 
 			} else if (parse[1] == "list") {
-				printf("Requesting lobby list...\n");
+				if (parse.Count() == 3) {
+					int limit = atoi(parse[2]);
+					printf("Requesting lobby list with limit %d...\n", limit);
+					SteamMatchmaking()->AddRequestLobbyListResultCountFilter(limit);
+				} else {
+					printf("Requesting lobby list...\n");
+				}
 
 				callbacks.Prepare();
 				SteamAPICall_t hSteamAPICall = SteamMatchmaking()->RequestLobbyList();
