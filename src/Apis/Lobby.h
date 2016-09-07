@@ -2,4 +2,4 @@
 
 #include "../Common.h"
 
-void LobbyCommands(s::StackArray<s::String> &parse);
+void LobbyCommands(Params &params);

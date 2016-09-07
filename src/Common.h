@@ -8,3 +8,5 @@
 
 #define SCRATCH_NAMESPACE s
 #include <Scratch.hpp>
+
+typedef s::StackArray<s::String> Params;

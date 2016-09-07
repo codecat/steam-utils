@@ -37,7 +37,7 @@ int main(int argc, char* args[])
 			continue;
 		}
 
-		s::StackArray<s::String> parse;
+		Params parse;
 		s::String(line).CommandLineSplit(parse);
 
 		if (parse[0] == "help") {
