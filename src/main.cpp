@@ -25,7 +25,18 @@ int main(int argc, char* args[])
 		if (line != nullptr) {
 			free(line);
 		}
-		line = readline(TERMCOL_BOLDRED "> " TERMCOL_RESET);
+
+		s::String prompt;
+		if (InLobby()) {
+			if (InLobbyHost()) {
+				prompt += s::strPrintF(TERMCOL_BOLDYELLOW "(lobby:%llu) " TERMCOL_RESET, InLobbyID());
+			} else {
+				prompt += s::strPrintF(TERMCOL_BOLDGREEN "(lobby:%llu) " TERMCOL_RESET, InLobbyID());
+			}
+		}
+		prompt += TERMCOL_BOLDRED "> " TERMCOL_RESET;
+		line = readline(prompt);
+
 		if (line == nullptr) {
 			break;
 		}
