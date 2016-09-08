@@ -99,34 +99,36 @@ static void List(Params &params)
 
 static void Data(Params &params)
 {
-	if (params.Count() == 2) {
+	bool inLobby = g_callbacks.m_inLobby.IsValid();
+
+	if (params.Count() == 2 && !inLobby) {
 		printf("Usage:\n");
-		printf("  lobby data <index> [key]\n");
+		printf("  lobby data <index>\n");
 		return;
 	}
 
-	int index = atoi(params[2]);
-	int numLobbies = g_callbacks.m_arrLobbyList.Count();
-	if (index < 0 || index >= numLobbies) {
-		printf("Index %d is out of range. We have %d listed lobb%s.\n", index, numLobbies, numLobbies != 1 ? "ies" : "y");
-		return;
-	}
+	int index = inLobby ? -1 : atoi(params[2]);
 
-	CSteamID &id = g_callbacks.m_arrLobbyList[index];
-	int numKeys = SteamMatchmaking()->GetLobbyDataCount(id);
-	printf("Lobby %llu has %d metadata key%s.\n", id.ConvertToUint64(), numKeys, numKeys != 1 ? "s" : "");
-
-	if (params.Count() >= 4) {
-		const char* key = params[3];
-		const char* value = SteamMatchmaking()->GetLobbyData(id, key);
-		printf("  " TERMCOL_BOLDGREEN "%s" TERMCOL_RESET ": '" TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "'\n", key, value);
+	CSteamID id;
+	if (index == -1 && inLobby) {
+		id = g_callbacks.m_inLobby;
 	} else {
-		for (int i = 0; i < numKeys; i++) {
-			char key[128];
-			char value[128];
-			SteamMatchmaking()->GetLobbyDataByIndex(id, i, key, 128, value, 128);
-			printf("  " TERMCOL_BOLDGREEN "%s" TERMCOL_RESET ": '" TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "'\n", key, value);
+		int numLobbies = g_callbacks.m_arrLobbyList.Count();
+		if (index < 0 || index >= numLobbies) {
+			printf("Index %d is out of range. We have %d listed lobb%s.\n", index, numLobbies, numLobbies != 1 ? "ies" : "y");
+			return;
 		}
+		id = g_callbacks.m_arrLobbyList[index];
+	}
+
+	int numKeys = SteamMatchmaking()->GetLobbyDataCount(id);
+	printf("Lobby %llu has %d metadata key%s:\n", id.ConvertToUint64(), numKeys, numKeys != 1 ? "s" : "");
+
+	for (int i = 0; i < numKeys; i++) {
+		char key[128];
+		char value[128];
+		SteamMatchmaking()->GetLobbyDataByIndex(id, i, key, 128, value, 128);
+		printf("  " TERMCOL_BOLDGREEN "%s" TERMCOL_RESET ": '" TERMCOL_BOLDWHITE "%s" TERMCOL_RESET "'\n", key, value);
 	}
 }
 
@@ -162,6 +164,33 @@ static void Create(Params &params)
 	g_callbacks.Prepare();
 	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->CreateLobby(lobbyType, numMaxMembers);
 	g_callbacks.m_CallResultLobbyCreated.Set(hSteamAPICall, &g_callbacks, &LobbyCallbacks::OnLobbyCreated);
+	g_callbacks.Wait();
+}
+
+static void Join(Params &params)
+{
+	//TODO: Joining private lobbies via ID
+
+	if (params.Count() == 2) {
+		printf("Usage:\n");
+		printf("  lobby join <index>\n");
+		return;
+	}
+
+	int index = atoi(params[2]);
+	int numLobbies = g_callbacks.m_arrLobbyList.Count();
+	if (index < 0 || index >= numLobbies) {
+		printf("Index %d is out of range. We have %d listed lobb%s.\n", index, numLobbies, numLobbies != 1 ? "ies" : "y");
+		return;
+	}
+
+	CSteamID &id = g_callbacks.m_arrLobbyList[index];
+
+	printf("Joing lobby with ID %llu\n", id.ConvertToUint64());
+
+	g_callbacks.Prepare();
+	SteamAPICall_t hSteamAPICall = SteamMatchmaking()->JoinLobby(id);
+	g_callbacks.m_CallResultLobbyEnter.Set(hSteamAPICall, &g_callbacks, &LobbyCallbacks::OnLobbyEnter);
 	g_callbacks.Wait();
 }
 
@@ -202,6 +231,8 @@ void LobbyCommands(Params &params)
 		Data(params);
 	} else if (params[1] == "create") {
 		Create(params);
+	} else if (params[1] == "join") {
+		Join(params);
 	} else if (params[1] == "leave") {
 		Leave();
 	}
