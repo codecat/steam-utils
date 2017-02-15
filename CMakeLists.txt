@@ -13,6 +13,7 @@ add_executable(steamutils
 	src/Callbacks.cpp
 
 	src/Apis/Lobby.cpp
+	src/Apis/Stats.cpp
 )
 
 target_link_libraries(steamutils

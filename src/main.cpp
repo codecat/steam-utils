@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Apis/Lobby.h"
+#include "Apis/Stats.h"
 
 int main(int argc, char* args[])
 {
@@ -48,9 +49,13 @@ int main(int argc, char* args[])
 		if (parse[0] == "help") {
 			printf("Available commands:\n");
 			printf("  lobby\n");
+			printf("  stats\n");
 
 		} else if (parse[0] == "lobby") {
 			LobbyCommands(parse);
+
+		} else if (parse[0] == "stats") {
+			StatsCommands(parse);
 		}
 	}
 
