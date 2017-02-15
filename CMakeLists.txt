@@ -14,6 +14,7 @@ add_executable(steamutils
 
 	src/Apis/Lobby.cpp
 	src/Apis/Stats.cpp
+	src/Apis/Achievements.cpp
 )
 
 target_link_libraries(steamutils

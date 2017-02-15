@@ -8,5 +8,13 @@ Command line Steam utilities for debugging.
 
 Currently supports:
 
-* Listing lobbies and their data.
-* Getting and setting user stats.
+* Lobbies
+** Listing lobbies
+** Data listing
+** Creating lobbies
+* Stats
+** Getting and setting user stats
+* Achievements
+** Listing achievements
+** Setting achievements
+** Clearing achievements
