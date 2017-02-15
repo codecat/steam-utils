@@ -9,3 +9,4 @@ Command line Steam utilities for debugging.
 Currently supports:
 
 * Listing lobbies and their data.
+* Getting and setting user stats.
