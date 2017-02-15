@@ -61,7 +61,7 @@ static void Clear(Params &params)
 	s::String id = params[2];
 
 	if (!SteamUserStats()->ClearAchievement(id)) {
-		printf("Couldn't set achievement.\n");
+		printf("Couldn't clear achievement.\n");
 		return;
 	}
 
